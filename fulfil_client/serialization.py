@@ -7,6 +7,7 @@ try:
 except ImportError:
     import json
 import base64
+from money import Money
 
 
 class JSONDecoder(object):
@@ -69,6 +70,15 @@ def parse_async_result(dct):
 
 JSONDecoder.register(
     'AsyncResult', parse_async_result
+)
+
+
+JSONDecoder.register(
+    'Money',
+    lambda dct: Money(
+        dct['amount'],
+        dct['currency'],
+    )
 )
 
 
@@ -137,3 +147,11 @@ JSONEncoder.register(
         '__class__': 'Decimal',
         'decimal': str(o),
     })
+JSONEncoder.register(
+    Money,
+    lambda o: {
+        '__class__': 'Money',
+        'amount': str(o.amount),
+        'currency': str(o.currency),
+    }
+)
